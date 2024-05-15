@@ -126,9 +126,9 @@ def get_winner(board):
         return 0
     
 # create the function that we will call to make the computer move
-def computer_move(board):
+def computer_move(difficulty ,board):
 
-    move = get_best_move(board, 1, 1)
+    move = get_best_move(board, difficulty, 1)
     if move is not None:
         board[move[0]][move[1]] = 1
         flip_pieces(board, move[0], move[1], 1)

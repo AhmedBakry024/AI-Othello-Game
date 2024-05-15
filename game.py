@@ -26,6 +26,50 @@ font = pygame.font.Font(None, 36)
 # Initialize the current player (1 for white, -1 for black)
 current_player = -1
 
+def select_difficulty_screen():
+    win.fill(BACKGROUND)
+    # Define the button rectangles
+    easy_button_rect = pygame.Rect(150, 100, 110, 50)
+    medium_button_rect = pygame.Rect(150, 200, 110, 50)
+    hard_button_rect = pygame.Rect(150, 300, 110, 50)
+
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                # Check if the user clicked on the "Easy" button
+                if easy_button_rect.collidepoint(mouse_pos):
+                    return 1
+                # Check if the user clicked on the "Medium" button
+                elif medium_button_rect.collidepoint(mouse_pos):
+                    return 3
+                # Check if the user clicked on the "Hard" button
+                elif hard_button_rect.collidepoint(mouse_pos):
+                    return 5
+
+        # Draw the buttons
+        pygame.draw.rect(win, WHITE, easy_button_rect)
+        pygame.draw.rect(win, WHITE, medium_button_rect)
+        pygame.draw.rect(win, WHITE, hard_button_rect)
+
+        # Draw the button labels
+        easy_label = font.render("Easy", True, BLACK)
+        medium_label = font.render("Medium", True, BLACK)
+        hard_label = font.render("Hard", True, BLACK)
+        win.blit(easy_label, (easy_button_rect.x + 25, easy_button_rect.y + 15))
+        win.blit(medium_label, (medium_button_rect.x + 10, medium_button_rect.y + 15))
+        win.blit(hard_label, (hard_button_rect.x + 25, hard_button_rect.y + 15))
+
+        pygame.display.update()
+
+# Call the select_difficulty_screen function at the start of your script
+difficulty = select_difficulty_screen()
+
+# Then, in your main loop, use the difficulty variable to adjust the game difficulty
+
 # Draw board
 def draw_board():
     win.fill(BACKGROUND)
@@ -79,16 +123,19 @@ while run:
         else:
             text = "It's a draw!"
         text = font.render(text, True, WHITE)
-        text_rect = text.get_rect(center=(win.get_width() // 2, win.get_height() // 2))
+        text_rect = text.get_rect(center=(win.get_width() // 2, win.get_height() // 2+20))
+        box = pygame.Rect(text_rect.x - 10, text_rect.y - 10, text_rect.width + 20, text_rect.height + 20)
+        pygame.draw.rect(win, BLACK, box)
+        
         win.blit(text, text_rect)
         game.display.update()
         game.time.wait(3000)
-        run = False
+        pygame.quit()
     else:
         if current_player == -1:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    run = False
+                    pygame.quit()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
                     # Calculate the column and row indices.
@@ -105,7 +152,7 @@ while run:
         # If the current player is the computer, make a move
         elif current_player == 1:
             if len(controller.get_possible_moves(board, 1)) > 0:
-                controller.computer_move(board)
+                controller.computer_move(difficulty,board)
             current_player *= -1  # Switch the current player
 
     
